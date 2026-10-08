@@ -37,6 +37,10 @@ test('login orange hrm',async ({page})=>{
 
           const firstelementText = await page.locator('.orangehrm-login-form p').first().textContent();         //or we can use - element.nth(0);
           console.log(firstelementText)
+          //to get all elemnet test
+//           await page.locator('elementslist').allInnerTexts()
+//  await page.locator('elementslist').allTextContents()
+
 
           //or
           const secondel = page.locator('.orangehrm-login-form p').nth(1);
@@ -100,4 +104,49 @@ In short: prefer built-in locators first, CSS second, XPath last. Built-in locat
 
 })
 
+
+/*
+Matching only visible elements
+note
+It's usually better to find a more reliable way to uniquely identify the element instead of checking the visibility.
+
+Consider a page with two buttons, the first invisible and the second visible.
+
+<button style='display: none'>Invisible</button>
+<button>Visible</button>
+
+This will find both buttons and throw a strictness violation error:
+
+await page.locator('button').click();
+
+This will only find a second button, because it is visible, and then click it.
+
+await page.locator('button').visible().click();
+*/
+//*count
+//await expect(page.getByRole('listitem')).toHaveCount(3);
+
+//iterate list of elements
+
+/*
+Do something with each element in the list
+Iterate elements:
+
+for (const row of await page.getByRole('listitem').all())
+  console.log(await row.textContent());
+
+Iterate using regular for loop:
+
+const rows = page.getByRole('listitem');
+const count = await rows.count();
+for (let i = 0; i < count; ++i)
+  console.log(await rows.nth(i).textContent());
+
+Evaluate in the page
+The code inside locator.evaluateAll() runs in the page, you can call any DOM apis there.
+
+const rows = page.getByRole('listitem');
+const texts = await rows.evaluateAll(
+    list => list.map(element => element.textContent));
+    */
 
