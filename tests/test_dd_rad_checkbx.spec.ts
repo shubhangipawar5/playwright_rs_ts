@@ -2,6 +2,11 @@ import { test, expect } from '@playwright/test';
 
 test('handling static select drop down options', async ({ page }) => {
   await page.goto('https://rahulshettyacademy.com/AutomationPractice/');
+  //type sequentially
+//   /await page.getByPlaceholder('Search').pressSequentially('Pune', {
+//   delay: 150, // milliseconds between characters
+// });
+
 //selectoption DD
   await page.locator('select#dropdown-class-example').selectOption('Option1');
 //Radio button
@@ -41,3 +46,17 @@ await page.getByLabel('Choose multiple colors').selectOption(['red', 'green', 'b
 //await page.getByRole('button').click({ force: true });
 //focu element
 //await page.getByLabel('Password').focus();
+
+/*
+Yes. In Playwright you can select by index, but the API shape is a little different from Cypress.
+await page.getByLabel('Choose a color').selectOption({ index: 2 });
+You can also select by value or visible label:
+await page.getByLabel('Choose a color').selectOption('blue'); // value
+await page.getByLabel('Choose a color').selectOption({ label: 'Blue' }); // visible text
+await page.getByLabel('Choose a color').selectOption({ value: 'blue' });
+For multiple selections:
+await page.getByLabel('Choose colors').selectOption([
+  { index: 0 },
+  { value: 'blue' },
+]);
+*/

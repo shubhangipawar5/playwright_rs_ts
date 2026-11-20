@@ -2,7 +2,9 @@
   "name": "playwright_rs",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "runner1": "npx playwright test practice.spec.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

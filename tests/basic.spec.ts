@@ -1,4 +1,10 @@
-import {test, expect} from '@playwright/test';
+// const {test} = require ('@playwright/test')
+//or
+
+//element handle - https://playwright.dev/docs/api/class-elementhandle
+//all methods/commands - https://playwright.dev/docs/api/class-locator
+
+import {test, expect} from '@playwright/test'
 
 test.skip('first playwright test', async function({browser}){      // playwrights browser fixture we are using to invoke browser
      const context = await browser.newContext();        // context is a instance for the current browser execution which may have prev. cookies,sessions etc. so to revoke that playwright creats a fresh context for every test
@@ -7,8 +13,12 @@ test.skip('first playwright test', async function({browser}){      // playwright
      const page = await context.newPage();        //cretaes a new page /tab in browser context
 
      await page.goto('https://rahulshettyacademy.com/AutomationPractice/');
+     // wait mechaniasm
+    // await page.waitForTimeout(20000);      //hardcoded wait will wait the execution for 20s at this step //here configs global timout can also overide this timeout so insted of this we can wait on element
 
-
+    // await page.waitForSelector('locator');
+    //or explicite timeout
+    //await page.locator('elemnet').waitFor({state: 'visible'}); 
 
 })
 
@@ -27,8 +37,16 @@ test('auto cretaes the page fixture', async({page})=>{          //default browse
 
 })
 
-test('login orange hrm',async ({page})=>{
+test('login orange hrm',async ({page}, testInfo)=>{
+         
+             if(testInfo.retry){
+           console.log(`retrying for ${testInfo.retry} time`) //retry count
+           console.log(`retrying for ${testInfo.title} test cases`) //tets case title
+         }
+          
+
           await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
+          
           await expect(page).toHaveTitle('OrangeHRM')
           //assert the text contains
           await expect(page.locator('h5')).toContainText('Login')
@@ -41,7 +59,7 @@ test('login orange hrm',async ({page})=>{
 //           await page.locator('elementslist').allInnerTexts()
 //  await page.locator('elementslist').allTextContents()
 
-
+                 
           //or
           const secondel = page.locator('.orangehrm-login-form p').nth(1);
           // innerText() returns visible text; For UI testing, prefer innerText() or Playwright assertions:
@@ -67,7 +85,7 @@ test('login orange hrm',async ({page})=>{
 
           await page.getByRole('button', { name: 'Login' }).click();
 
-          await expect(page.locator('h6').first()).toContainText('Dashboard');
+          await expect(page.locator('h6').first()).toContainText('Dashboard', { timeout: 10_000 });
 
           //or get by text
           await expect(page.getByText('Dashboard').last()).toBeVisible();
@@ -89,7 +107,7 @@ test('login orange hrm',async ({page})=>{
           await expect(page.locator('//input[@class="oxd-input oxd-input--active"]')).toBeVisible();
 
           //*****/ All locators in Playwright by default work with elements in Shadow DOM. 
-
+//other locators supported by playwright - https://playwright.dev/docs/other-locators
 /*
 Playwright built-in locators like getByRole(), getByLabel(), and getByText() are usually more stable and readable than CSS or XPath.
 await page.getByRole('button', { name: 'Login' }).click();
@@ -103,7 +121,7 @@ In short: prefer built-in locators first, CSS second, XPath last. Built-in locat
           
 
 })
-
+// same as cy.contains - await page.locator('article:has-text("Playwright")').click();
 
 /*
 Matching only visible elements
@@ -150,3 +168,97 @@ const texts = await rows.evaluateAll(
     list => list.map(element => element.textContent));
     */
 
+/* locator chaining
+await page
+  .locator('.product-card')
+  .nth(1)
+  .getByRole('button', { name: 'Add to cart' })
+  .click();
+
+
+  ---
+  await page
+  .locator('.dashboard')
+  .locator('.user-section')
+  .locator('.profile-card')
+  .getByRole('button', { name: 'View Profile' })
+  .click();
+
+
+  --
+  const rowLocator = page.getByRole('listitem');
+
+await rowLocator
+    .filter({ hasText: 'Mary' })
+    .filter({ has: page.getByRole('button', { name: 'Say goodbye' }) })
+    .screenshot({ path: 'screenshot.png' });
+
+*/
+
+
+/* elemnets iteration 
+Do something with each element in the list
+Iterate elements:
+
+for (const row of await page.getByRole('listitem').all())
+  console.log(await row.textContent());
+
+Iterate using regular for loop:
+
+const rows = page.getByRole('listitem');
+const count = await rows.count();
+for (let i = 0; i < count; ++i)
+  console.log(await rows.nth(i).textContent());
+
+Evaluate in the page
+The code inside locator.evaluateAll() runs in the page, you can call any DOM apis there.
+
+const rows = page.getByRole('listitem');
+const texts = await rows.evaluateAll(
+    list => list.map(element => element.textContent));
+    */
+
+    //npx playwright codegen.   - to open codgen recorder
+    //npx playwright codegen --device "Blackberry PlayBook". - to open emulator device
+
+    /*
+    Set action and navigation timeouts in the config
+playwright.config.ts
+
+
+export default defineConfig({
+  use: {
+    actionTimeout: 10 * 1000,
+    navigationTimeout: 30 * 1000,
+  },
+});
+*/
+
+/*
+In Playwright, explicit timeout usually means you set a timeout directly on a test or operation. Implicit timeout means Playwright uses a default timeout when you don’t specify one.
+
+For example:
+test.setTimeout(60_000); // explicit test timeout: 60 seconds
+A locator action also has a timeout. If you omit it, Playwright uses the default action timeout (often no timeout unless configured):
+await page.getByRole('button').click({ timeout: 5_000 }); // explicit: 5 seconds
+You can set defaults in playwright.config.ts, such as timeout for tests and expect.timeout for assertions. Locator actions and assertions have separate timeout settings.
+
+
+In Playwright, waitFor usually means waiting for a specific condition before continuing. The exact method depends on what you’re waiting for.
+// Wait for an element to become visible
+await page.getByText('Welcome').waitFor({ state: 'visible' });
+
+// Wait for navigation
+// await page.waitForURL('**');
+
+// // Wait for a response
+// await page.waitForResponse('**');
+// For most UI checks, prefer a web-first assertion because it waits and retries automatically:
+// await expect(page.getByText('Welcome')).toBeVisible();
+// Avoid fixed delays like page.waitForTimeout(2000) when possible; they can make tests flaky.
+
+
+*/
+
+//timrout- 
+//global, test, navigation, expect, action timouts
