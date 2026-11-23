@@ -8,9 +8,9 @@ test('alerts1', async ({ page }) => {
 
 //By default, dialogs are auto-dismissed by Playwright, However, you can register a dialog handler before the action that triggers the dialog to either dialog.accept() or dialog.dismiss() it.
 await page.goto('https://the-internet.herokuapp.com/javascript_alerts');
-page.on('dialog', dialog=> {
+page.on('dialog', async dialog=> {
      console.log(dialog.message)
-    dialog.accept()
+   await dialog.accept()
     //dialog.type()   //what type of laert it returns
    
 })
@@ -22,9 +22,9 @@ test('confirmalert', async ({ page }) => {
 
 //By default, dialogs are auto-dismissed by Playwright, However, you can register a dialog handler before the action that triggers the dialog to either dialog.accept() or dialog.dismiss() it.
 await page.goto('https://the-internet.herokuapp.com/javascript_alerts');
-page.on('dialog', dialog=> {
+page.on('dialog', async  dialog=> {
      console.log(dialog.message)
-    dialog.dismiss()
+   await dialog.dismiss()
    
 })
 await page.locator(':text-is("Click for JS Confirm")').click()
@@ -36,9 +36,9 @@ test.slow()
 //By default, dialogs are auto-dismissed by Playwright, However, you can register a dialog handler before the action that triggers the dialog to either dialog.accept() or dialog.dismiss() it.
 await page.goto('https://the-internet.herokuapp.com/javascript_alerts');
 
-page.on('dialog', dialog=> {
+page.on('dialog', async dialog=> {
      console.log(dialog.message)
-    dialog.accept('Anushree');
+   await dialog.accept('Anushree');
     expect(dialog.type()).toBe('prompt')
    
 })

@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { TIMEOUT } from 'node:dns';
 
 test('datepicker', async ({ page }) => {
+    const slowExpectTime = expect.configure({timeout: 9000});  // when we have many assertion line to increase the timeout then we can configure here for test level also
   await page.goto('https://jqueryui.com/');
   await page.getByRole('link', { name: 'Datepicker' }).click();
 
@@ -33,9 +35,10 @@ test('datepicker', async ({ page }) => {
     await (targetIndex > currentIndex ? next : prev).click();
     await expect(month).not.toHaveText(currentMonth!);
   }
+  //slow expect timout
 
-  await expect(month).toHaveText(targetMonth);
-  await expect(year).toHaveText(String(targetYear));
+  await slowExpectTime(month).toHaveText(targetMonth);   //this will take 9000 configured in test level
+  await expect(year).toHaveText(String(targetYear),{timeout: 6000});
 });
 
-// await frame2.locator(':text-is("20")').click()
+// await frame2.locator(':text-is("20")').click(

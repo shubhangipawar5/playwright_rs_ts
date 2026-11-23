@@ -1,12 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import 'dotenv/config';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Loads environment variables from the project root .env file.
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -35,25 +30,37 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
-    // baseURL: 'https://rahulshettyacademy.com/AutomationPractice/',
+    baseURL: process.env.BASE_URL || process.env.STAGE_BASE_URL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     // trace: 'on-first-retry',
     trace: 'on',
     headless: false,
     ignoreHTTPSErrors: true,
-        launchOptions: {
-            args: ['--disable-http2']
-        }
+    launchOptions: {
+      args: ['--disable-http2']
+    },
+    video: 'on'
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'],     channel: 'chrome', viewport:{width:1440, height:713}},
+      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport: { width: 1440, height: 713 } },
     },
-
+      {
+      name: 'dev',
+      use: { ...devices['Desktop Chrome'],
+        baseURL: process.env.DEV_BASE_URL || process.env.BASE_URL,
+      }
+    },
+    {
+      name: 'stage',
+      use: { ...devices['Desktop Chrome'],
+        baseURL: process.env.STAGE_BASE_URL,
+      }
+    },
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },

@@ -8,7 +8,6 @@ import { test, expect } from '@playwright/test'
 
 
 
-
 test('my test', { tag: '@smoke' }, async function ({ browser }) {
   const context = await browser.newContext();
   const page = await context.newPage();

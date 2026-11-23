@@ -1,10 +1,10 @@
 // const {test} = require ('@playwright/test')
 //or
-
+import {test, expect} from '@playwright/test';
 //element handle - https://playwright.dev/docs/api/class-elementhandle
 //all methods/commands - https://playwright.dev/docs/api/class-locator
 
-import {test, expect} from '@playwright/test'
+//test from @playwright/test is Playwright Test’s function for defining tests and hooks:
 
 test.skip('first playwright test', async function({browser}){      // playwrights browser fixture we are using to invoke browser
      const context = await browser.newContext();        // context is a instance for the current browser execution which may have prev. cookies,sessions etc. so to revoke that playwright creats a fresh context for every test
@@ -262,3 +262,9 @@ await page.getByText('Welcome').waitFor({ state: 'visible' });
 
 //timrout- 
 //global, test, navigation, expect, action timouts
+
+/*
+With this setting, it uses 1 worker on CI. Locally, undefined lets Playwright choose its default worker count.
+
+By default, Playwright uses half of the machine’s logical CPU cores as its maximum worker count. For example, on an 8-core machine, it would use up to 4 workers.
+*/
